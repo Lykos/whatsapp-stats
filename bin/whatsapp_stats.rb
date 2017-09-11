@@ -5,7 +5,7 @@ require 'time'
 Message = Struct.new(:time, :author, :text, :type)
 AuthorStats = Struct.new(:name, :text_bytes, :messages_by_type)
 
-WHATSAPP_MESSAGE_REGEXP = /^(\d+\/\d+\/\d+, \d+:\d+) - ([A-Za-z0-9\+ ]+?)(?:\: (.*)| changed the subject from ".*" to "(.*)")$/
+WHATSAPP_MESSAGE_REGEXP = /^(\d+\/\d+\/\d+, \d+:\d+) - ([^:]+?)(?:\: (.*)| changed the subject from ".*" to "(.*)")$/
 SPECIAL_MESSAGE_REGEXP = /^(\d+\/\d+\/\d+, \d+:\d+) - (?:Messages to this group are now secured with end-to-end encryption\. Tap for more info\.|[A-Za-z0-9\+ ]+? added [A-Za-z0-9\+ ]+|...[A-Za-z0-9\+ ]+?... created group ".*")$/
 TIME_FORMAT = "%m/%d/%y, %H:%M"
 MEDIA_OMITTED_TEXT = "<Media omitted>"
@@ -42,7 +42,7 @@ def message_sum(author_stats)
   author_stats.messages_by_type.values.inject(0, :+)
 end
 
-file = '/home/bernhard/Downloads/CFABW.txt'
+file = ARGV[0]
 messages = []
 current_raw_message = ''
 
