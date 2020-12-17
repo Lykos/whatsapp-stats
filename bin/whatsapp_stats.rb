@@ -8,7 +8,7 @@ AuthorStats = Struct.new(:name, :text_bytes, :messages_by_type)
 
 WHATSAPP_MESSAGE_REGEXP = /^(\d+\/\d+\/\d+, \d+:\d+) - ([^:]+?)(?:\: (.*)| changed the subject from ".*" to "(.*)")$/
 SPECIAL_MESSAGE_REGEXP = /^(\d+\/\d+\/\d+, \d+:\d+) - (?:Messages to this group are now secured with end-to-end encryption\. Tap for more info\.|[^:]+? added .+|[^:]+? created group ".*")$/
-TIME_FORMAT = "%m/%d/%y, %H:%M"
+TIME_FORMAT = "%d/%m/%Y, %R"
 MEDIA_OMITTED_TEXT = "<Media omitted>"
 
 # Check whether the given line starts a new message. This is not 100% accurate
@@ -29,7 +29,7 @@ def parse_message(raw_message)
   else
     type = :text
   end
-  time = Time.strptime(raw_time, TIME_FORMAT)
+  time = DateTime.strptime(raw_time, TIME_FORMAT)
   Message.new(time, author, text, type)  
 end
 
