@@ -43,6 +43,11 @@ def message_sum(author_stats)
   author_stats.messages_by_type.values.inject(0, :+)
 end
 
+if ARGV.length != 1
+  warn "This script needs exactly one argument: The Whatsapp History file."
+  exit(1)
+end
+
 file = ARGV[0]
 messages = []
 current_raw_message = ''
