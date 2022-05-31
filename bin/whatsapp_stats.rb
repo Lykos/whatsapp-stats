@@ -1,11 +1,13 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 require 'time'
 
 Message = Struct.new(:time, :author, :text, :type)
 AuthorStats = Struct.new(:name, :text_bytes, :messages_by_type)
 
-WHATSAPP_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - ([^:]+?)(?:: (.*)| changed the subject from ".*" to "(.*)")$}
-SPECIAL_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - (?:Messages to this group are now secured with end-to-end encryption\. Tap for more info\.|[^:]+? added .+|[^:]+? created group ".*")$}
+WHATSAPP_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - ([^:]+?)(?:: (.*)| changed the subject from ".*" to "(.*)")$}.freeze
+SPECIAL_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - (?:Messages to this group are now secured with end-to-end encryption\. Tap for more info\.|[^:]+? added .+|[^:]+? created group ".*")$}.freeze
 TIME_FORMAT = '%d/%m/%Y, %R'
 MEDIA_OMITTED_TEXT = '<Media omitted>'
 
@@ -64,7 +66,7 @@ messages.push(parse_message(current_raw_message))
 
 # Collect stats for each author.
 author_stats = []
-messages.group_by { |m| m.author }.each do |author, ms|
+messages.group_by(&:author).each do |author, ms|
   stats = AuthorStats.new(author, 0, {})
   stats.messages_by_type.default = 0
   ms.each do |m|
