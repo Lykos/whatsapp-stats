@@ -6,8 +6,8 @@ require 'time'
 Message = Struct.new(:time, :author, :text, :type)
 AuthorStats = Struct.new(:name, :text_bytes, :messages_by_type)
 
-WHATSAPP_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - ([^:]+?)(?:: (.*)| changed the subject from ".*" to "(.*)")$}.freeze
-SPECIAL_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - (?:Messages to this group are now secured with end-to-end encryption\. Tap for more info\.|[^:]+? added .+|[^:]+? created group ".*")$}.freeze
+WHATSAPP_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - ([^:]+?)(?:: (.*)| changed the subject from ".*" to "(.*)")$}
+SPECIAL_MESSAGE_REGEXP = %r{^(\d+/\d+/\d+, \d+:\d+) - (?:Messages to this group are now secured with end-to-end encryption\. Tap for more info\.|[^:]+? added .+|[^:]+? created group ".*")$} # rubocop:disable Metrics/LineLength
 TIME_FORMAT = '%d/%m/%Y, %R'
 MEDIA_OMITTED_TEXT = '<Media omitted>'
 
@@ -34,7 +34,7 @@ def parse_message(raw_message)
 end
 
 # Filters out special messages from WhatsApp that we want to ignore.
-def is_special_message(line)
+def special_message?(line)
   line =~ SPECIAL_MESSAGE_REGEXP
 end
 
@@ -54,7 +54,7 @@ current_raw_message = ''
 
 # Read and parse all message, but ignore special Whatsapp messages.
 File.readlines(file).each do |line|
-  next if is_special_message(line)
+  next if special_message?(line)
 
   if !current_raw_message.empty? && starts_new_message(line)
     messages.push(parse_message(current_raw_message))
@@ -79,5 +79,6 @@ end
 # Print stats
 author_stats.sort_by { |a| message_sum(a) }.reverse.each do |a|
   message_number_details = a.messages_by_type.collect { |t, n| "#{t}: #{n}" }.join(', ')
-  puts "#{a.name} wrote #{message_sum(a)} messages (#{message_number_details}) whose text had a total of #{a.text_bytes} bytes."
+  puts "#{a.name} wrote #{message_sum(a)} messages (#{message_number_details}) " \
+       "whose text had a total of #{a.text_bytes} bytes."
 end
